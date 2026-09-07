@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "stage": 1,
-  "implemented": false,
+  "implemented": true,
   "entrypoint": "model.stage1.predict",
   "artifacts": [
     {
       "filename": "best.pt",
       "required": true,
-      "bytes": null,
-      "sha256": null,
+      "bytes": 62573431,
+      "sha256": "568e7831b271793d8c211c7a3eba3af2a6de22c2e6681e1de89cf2aa4d3492e8",
       "google_drive_url": null
     }
   ]
