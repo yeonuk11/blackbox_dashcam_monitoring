@@ -1,15 +1,50 @@
 {
   "schema_version": 1,
   "stage": 2,
-  "implemented": false,
+  "implemented": true,
   "entrypoint": "model.stage2.predict",
   "artifacts": [
     {
       "filename": "best.pt",
       "required": true,
-      "bytes": null,
-      "sha256": null,
-      "google_drive_url": null
+      "bytes": 17830881,
+      "sha256": "56f2033f192c4fe04a55b75094bc1e1bcf1f7797e19f2676c21440a78c77d263",
+      "google_drive_url": "https://drive.google.com/drive/folders/1w5_rU8htDzU6J9RYIgSvAh1hBO2Dsx24"
+    },
+    {
+      "filename": "v2_fold0.pt",
+      "required": true,
+      "bytes": 17831201,
+      "sha256": "23923c6fe3b3048eeb93f17e65b5e96712371e052f864cadbb4c0796cba23913",
+      "google_drive_url": "https://drive.google.com/drive/folders/1w5_rU8htDzU6J9RYIgSvAh1hBO2Dsx24"
+    },
+    {
+      "filename": "v2_fold1.pt",
+      "required": true,
+      "bytes": 17831201,
+      "sha256": "7863c4945d123f3f48fc52b354a72f3b64f45f04d482d8a1f96aa350b9b34c01",
+      "google_drive_url": "https://drive.google.com/drive/folders/1w5_rU8htDzU6J9RYIgSvAh1hBO2Dsx24"
+    },
+    {
+      "filename": "stage2_backbone.pt",
+      "required": true,
+      "bytes": 116172445,
+      "sha256": "7d458895ba390293e6d34bb66c47db8eed5803678975d9b2b2dde7553de3ae7e",
+      "google_drive_url": "https://drive.google.com/drive/folders/1w5_rU8htDzU6J9RYIgSvAh1hBO2Dsx24"
+    },
+    {
+      "filename": "convnext_tiny_in1k.pt",
+      "required": true,
+      "bytes": 111339867,
+      "sha256": "e3385da9dbddbb991b6c7a884657fd40bf15e5ee425818506eca8a708150b286",
+      "google_drive_url": "https://drive.google.com/drive/folders/1w5_rU8htDzU6J9RYIgSvAh1hBO2Dsx24"
+    },
+    {
+      "filename": "ssdlite320_mobilenet_v3_large_coco-a79551df.pth",
+      "required": true,
+      "bytes": 14069355,
+      "sha256": "a79551df90c79834bcd3bb3845ef9d966b5449a3a9b2833ae8404778ca5d65d2",
+      "google_drive_url": "https://drive.google.com/drive/folders/1w5_rU8htDzU6J9RYIgSvAh1hBO2Dsx24"
     }
   ]
 }
