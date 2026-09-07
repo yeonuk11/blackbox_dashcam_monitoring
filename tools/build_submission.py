@@ -8,6 +8,7 @@ import zipfile
 from pathlib import Path
 
 from validate_submission import validate
+from verify_weights import verify
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -26,43 +27,46 @@ def members() -> list[Path]:
     )
 
 
-def build(output: Path, *, allow_missing_weights: bool) -> None:
+def build(output: Path, *, allow_incomplete: bool) -> None:
     required = [SOURCE / "inference.py", SOURCE / "requirements.txt"]
-    required.extend(SOURCE / "model" / f"stage{number}" / "__init__.py" for number in (1, 2, 3))
+    for number in (1, 2, 3):
+        stage_dir = SOURCE / "model" / f"stage{number}"
+        required.extend((stage_dir / "__init__.py", stage_dir / "stage.json"))
     missing = [str(path) for path in required if not path.is_file()]
     if missing:
         raise FileNotFoundError(f"missing required source files: {missing}")
-    weight_paths = [SOURCE / "model" / f"stage{number}" / "best.pt" for number in (1, 2, 3)]
-    missing_weights = [str(path) for path in weight_paths if not path.is_file()]
-    if missing_weights and not allow_missing_weights:
-        raise FileNotFoundError(
-            "final build requires each stage best.pt; use --allow-missing-weights "
-            f"only for skeleton validation: {missing_weights}"
-        )
+
+    artifact_errors, verified = verify(allow_incomplete=allow_incomplete)
+    if artifact_errors:
+        raise RuntimeError("stage artifact verification failed: " + "; ".join(artifact_errors))
+
     output.parent.mkdir(parents=True, exist_ok=True)
     if output.exists():
         output.unlink()
     with zipfile.ZipFile(output, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         for path in members():
             archive.write(path, path.relative_to(SOURCE).as_posix())
-    errors = validate(output, require_weights=not allow_missing_weights)
+    errors = validate(output, require_weights=not allow_incomplete)
     if errors:
         output.unlink(missing_ok=True)
         raise RuntimeError("invalid submission: " + "; ".join(errors))
     print(f"built: {output.resolve()}")
     print(f"compressed_size_mib: {output.stat().st_size / 1024**2:.2f}")
-    if missing_weights:
-        print("mode: skeleton (weights intentionally absent)")
-    else:
-        print("mode: final (all stage weights present)")
+    print(f"mode: {'skeleton' if allow_incomplete else 'final'}")
+    for name in verified:
+        print(f"verified: {name}")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=ROOT / "dist" / "submission.zip")
-    parser.add_argument("--allow-missing-weights", action="store_true")
+    parser.add_argument(
+        "--allow-incomplete", "--allow-missing-weights",
+        dest="allow_incomplete", action="store_true",
+        help="build a development skeleton even when stages or artifacts are incomplete",
+    )
     args = parser.parse_args()
-    build(args.output, allow_missing_weights=args.allow_missing_weights)
+    build(args.output, allow_incomplete=args.allow_incomplete)
 
 
 if __name__ == "__main__":

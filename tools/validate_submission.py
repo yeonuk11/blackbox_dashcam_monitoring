@@ -5,6 +5,8 @@ from __future__ import annotations
 
 import argparse
 import ast
+import hashlib
+import json
 import sys
 import zipfile
 from pathlib import Path, PurePosixPath
@@ -12,9 +14,59 @@ from pathlib import Path, PurePosixPath
 
 REQUIRED_ROOT = {"inference.py", "requirements.txt"}
 REQUIRED_FUNCTIONS = {"predict_stage1", "predict_stage2", "predict_stage3"}
-STAGE_DIRS = {f"model/stage{number}/" for number in (1, 2, 3)}
 MAX_ZIP_BYTES = 10 * 1024**3
 MAX_UNPACKED_BYTES = 32 * 1024**3
+
+
+def _validate_stage_manifest(
+    archive: zipfile.ZipFile, names: set[str], stage: int, *, require_weights: bool
+) -> list[str]:
+    errors: list[str] = []
+    manifest_name = f"model/stage{stage}/stage.json"
+    if manifest_name not in names:
+        return [f"missing stage manifest: {manifest_name}"]
+    try:
+        manifest = json.loads(archive.read(manifest_name))
+    except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+        return [f"invalid {manifest_name}: {exc}"]
+    if not isinstance(manifest, dict) or manifest.get("stage") != stage:
+        errors.append(f"{manifest_name} has an invalid stage declaration")
+        return errors
+    if require_weights and manifest.get("implemented") is not True:
+        errors.append(f"stage{stage} is not marked implemented")
+    artifacts = manifest.get("artifacts")
+    if not isinstance(artifacts, list) or not artifacts:
+        errors.append(f"{manifest_name} must declare at least one artifact")
+        return errors
+    filenames: set[str] = set()
+    for artifact in artifacts:
+        if not isinstance(artifact, dict):
+            errors.append(f"stage{stage} has a non-object artifact entry")
+            continue
+        filename = artifact.get("filename")
+        if not isinstance(filename, str) or not filename or PurePosixPath(filename).name != filename:
+            errors.append(f"stage{stage} has an unsafe artifact filename: {filename!r}")
+            continue
+        filenames.add(filename)
+        member_name = f"model/stage{stage}/{filename}"
+        required = artifact.get("required", True) is not False
+        if require_weights and required and member_name not in names:
+            errors.append(f"missing required artifact: {member_name}")
+            continue
+        if require_weights and required:
+            expected_sha = artifact.get("sha256")
+            expected_bytes = artifact.get("bytes")
+            if not isinstance(expected_sha, str) or len(expected_sha) != 64:
+                errors.append(f"missing SHA-256 metadata for {member_name}")
+                continue
+            payload = archive.read(member_name)
+            if expected_bytes != len(payload):
+                errors.append(f"size mismatch for {member_name}")
+            if hashlib.sha256(payload).hexdigest().lower() != expected_sha.lower():
+                errors.append(f"SHA-256 mismatch for {member_name}")
+    if require_weights and "best.pt" not in filenames:
+        errors.append(f"stage{stage} manifest must declare best.pt")
+    return errors
 
 
 def validate(path: Path, *, require_weights: bool = False) -> list[str]:
@@ -45,11 +97,13 @@ def validate(path: Path, *, require_weights: bool = False) -> list[str]:
         unexpected = sorted(top - {"inference.py", "requirements.txt", "model"})
         if unexpected:
             errors.append(f"unexpected top-level entries: {unexpected}")
-        for stage_dir in sorted(STAGE_DIRS):
-            if not any(name.startswith(stage_dir) for name in names):
-                errors.append(f"missing stage package: {stage_dir}")
-            if require_weights and f"{stage_dir}best.pt" not in names:
-                errors.append(f"missing final weight: {stage_dir}best.pt")
+        for stage in (1, 2, 3):
+            stage_prefix = f"model/stage{stage}/"
+            if not any(name.startswith(stage_prefix) for name in names):
+                errors.append(f"missing stage package: {stage_prefix}")
+            errors.extend(
+                _validate_stage_manifest(archive, names, stage, require_weights=require_weights)
+            )
         if "inference.py" in names:
             try:
                 tree = ast.parse(archive.read("inference.py"), filename="inference.py")
@@ -82,9 +136,9 @@ def main() -> int:
         return 1
     print(f"PASS: {args.archive}")
     print(" - root files and all three predict functions are present")
-    print(" - model/stage1, stage2, stage3 packages are present")
+    print(" - stage manifests and top-level archive layout are valid")
     if args.require_weights:
-        print(" - all three best.pt files are present")
+        print(" - all stages are implemented and artifact hashes match")
     return 0
 
 

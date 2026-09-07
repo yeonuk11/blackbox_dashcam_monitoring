@@ -33,6 +33,9 @@ def main() -> int:
     required.extend(
         ROOT / f"submission/model/stage{number}/predict.py" for number in (1, 2, 3)
     )
+    required.extend(
+        ROOT / f"submission/model/stage{number}/stage.json" for number in (1, 2, 3)
+    )
     errors.extend(f"missing required file: {path.relative_to(ROOT)}" for path in required if not path.is_file())
     if (ROOT / "submission/script.py").exists():
         errors.append("submission/script.py must be removed; DACON supplies it")

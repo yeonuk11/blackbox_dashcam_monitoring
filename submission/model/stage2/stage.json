@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "stage": 2,
+  "implemented": false,
+  "entrypoint": "model.stage2.predict",
+  "artifacts": [
+    {
+      "filename": "best.pt",
+      "required": true,
+      "bytes": null,
+      "sha256": null,
+      "google_drive_url": null
+    }
+  ]
+}
