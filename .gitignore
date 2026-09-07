@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Local data, experiments, and generated outputs
+data/
+datasets/
+experiments/
+outputs/
+output/
+logs/
+dist/
+artifacts/
+
+# Model artifacts must not enter normal Git history. Share them separately or
+# adopt Git LFS in a dedicated team decision before adding any weight file.
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.safetensors
+*.engine
+*.pkl
+*.joblib
+
+# Submission archives are reproducible build products.
+*.zip
+
+# Keep package and documentation files under submission/model/ tracked.
+!submission/model/**/__init__.py
+!submission/model/**/predict.py
+!submission/model/**/README.md

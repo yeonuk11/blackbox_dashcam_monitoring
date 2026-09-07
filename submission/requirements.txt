@@ -1,0 +1,2 @@
+# PyTorch, torchvision, OpenCV, NumPy, pandas, and Pillow are provided by the
+# DACON baseline environment. Add only genuinely additional inference packages.

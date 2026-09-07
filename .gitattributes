@@ -1,0 +1,7 @@
+* text=auto eol=lf
+*.pt binary
+*.pth binary
+*.ckpt binary
+*.onnx binary
+*.safetensors binary
+*.zip binary
