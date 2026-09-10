@@ -7,23 +7,26 @@
     {
       "filename": "best.pt",
       "required": true,
-      "bytes": 17830881,
-      "sha256": "56f2033f192c4fe04a55b75094bc1e1bcf1f7797e19f2676c21440a78c77d263",
-      "google_drive_url": "https://drive.google.com/drive/folders/1w5_rU8htDzU6J9RYIgSvAh1hBO2Dsx24"
+      "bytes": 17831949,
+      "sha256": "94c3742a779ec2fd88fdca8e3df887c17c4139322b48d932c3c91365e5bd8c5f",
+      "google_drive_url": "https://drive.google.com/drive/folders/1w5_rU8htDzU6J9RYIgSvAh1hBO2Dsx24",
+      "google_drive_filename": "q2_best.pt"
     },
     {
       "filename": "v2_fold0.pt",
       "required": true,
-      "bytes": 17831201,
-      "sha256": "23923c6fe3b3048eeb93f17e65b5e96712371e052f864cadbb4c0796cba23913",
-      "google_drive_url": "https://drive.google.com/drive/folders/1w5_rU8htDzU6J9RYIgSvAh1hBO2Dsx24"
+      "bytes": 17832269,
+      "sha256": "9cedb9b469e564195f880b954b9cccdfe3e31eea5b7dbc44169b8ba4626c1436",
+      "google_drive_url": "https://drive.google.com/drive/folders/1w5_rU8htDzU6J9RYIgSvAh1hBO2Dsx24",
+      "google_drive_filename": "q2_v2_fold0.pt"
     },
     {
       "filename": "v2_fold1.pt",
       "required": true,
-      "bytes": 17831201,
-      "sha256": "7863c4945d123f3f48fc52b354a72f3b64f45f04d482d8a1f96aa350b9b34c01",
-      "google_drive_url": "https://drive.google.com/drive/folders/1w5_rU8htDzU6J9RYIgSvAh1hBO2Dsx24"
+      "bytes": 17832269,
+      "sha256": "4e0ba9ee65d309152bf5b487c726ed4b48ee95e1a86ebc78f38723d86ae980f7",
+      "google_drive_url": "https://drive.google.com/drive/folders/1w5_rU8htDzU6J9RYIgSvAh1hBO2Dsx24",
+      "google_drive_filename": "q2_v2_fold1.pt"
     },
     {
       "filename": "stage2_backbone.pt",
